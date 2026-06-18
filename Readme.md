@@ -46,7 +46,7 @@ This assignment demonstrates a serverless data pipeline on AWS using S3, Glue, C
 
 ### CloudWatch — Crawler Run Log
 
-![CloudWatch Log](Screenshots/cloudwatch.png)
+![CloudWatch Log](Screenshots/CloudWatch.png)
 
 ### IAM Role — Permissions
 
