@@ -24,6 +24,38 @@ Because the AWS Console UI updates frequently, use the search bar at the top of 
 4. Assign the IAM role created in the previous step.
 5. Configure the output to point to a database (create a new database if you don't have one yet).
 
+## Approach & Explanation
+
+This assignment demonstrates a serverless data pipeline on AWS using S3, Glue, CloudWatch, and Athena — no servers to provision or manage.
+
+**Dataset:** The `Amazon Sale Report.csv` from the Kaggle e-commerce dataset was used. It contains order-level records with fields for product category, fulfilment method, order status, SKU, quantity, amount, and date — all columns required by the 5 queries.
+
+**Pipeline Overview:**
+1. **S3** stores the raw CSV in `raw-data/` and Athena query results in `processed-data/`.
+2. **IAM Role** grants the Glue Crawler read access to S3 and permission to write metadata to the Glue Data Catalog.
+3. **Glue Crawler** scans the S3 folder, infers the CSV schema, and registers the table in the Data Catalog automatically — no manual `CREATE TABLE` needed.
+4. **CloudWatch** logs the crawler run so you can verify it completed successfully and see how many records were detected.
+5. **Athena** queries the catalogued table directly against the CSV in S3 using standard SQL.
+
+**Key decisions:**
+- Only `Amazon Sale Report.csv` was loaded — the other 6 Kaggle files contain financial summaries and unrelated data that would create schema conflicts if placed in the same S3 prefix.
+- Each CSV was placed in its own subfolder so the Glue Crawler maps one folder -> one table cleanly.
+- Query 4 uses `SUBSTR(date, 7, 2) || '-' || SUBSTR(date, 1, 2)` to extract a sortable `YY-MM` string from the `MM-DD-YY` date format in the source data.
+
+## Screenshots
+
+### CloudWatch — Crawler Run Log
+
+![CloudWatch Log](Screenshots/cloudwatch.png)
+
+### IAM Role — Permissions
+
+![IAM Role](Screenshots/GlueRole.png)
+
+### S3 Buckets — Structure
+
+![S3 Buckets](Screenshots/S3Bucket.png)
+
 ## Results
 
 ### Query 1 Basic Table Exploration
